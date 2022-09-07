@@ -8,7 +8,7 @@ const loadPhones = async (searchText, dataLimit) => {
 
 // display phone function
 const displayPhones = (phones, dataLimit) => {
-//   console.log(phones);
+  //   console.log(phones);
   const phonesContainer = document.getElementById("phones-container");
   phonesContainer.innerHTML = ""; // Reseting previous search element
 
@@ -17,8 +17,7 @@ const displayPhones = (phones, dataLimit) => {
   if (dataLimit && phones.length > 10) {
     phones = phones.slice(0, 10);
     loadMoreBtn.classList.remove("d-none");
-  }
-  else{
+  } else {
     loadMoreBtn.classList.add("d-none");
   }
 
@@ -38,7 +37,8 @@ const displayPhones = (phones, dataLimit) => {
                 <div class="card-body p-4">
                     <h5 class="card-title">${phone.phone_name}</h5>
                         <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                        <a href="#" class="btn btn-primary">Show details</a>
+                        <button onclick = "loadPhoneDetails('${phone.slug}')" href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#phoneDetailsModal" >Show details</button>
+                        
                 </div>
         </div>
         `;
@@ -51,17 +51,27 @@ const displayPhones = (phones, dataLimit) => {
 // search process function
 
 const searchProcess = (dataLimit) => {
-    toggleSpinner(true);
-    const searchField = document.getElementById("search-field");
-    const searchText = searchField.value;
-    loadPhones(searchText, dataLimit);
-}
+  toggleSpinner(true);
+  const searchField = document.getElementById("search-field");
+  const searchText = searchField.value;
+  loadPhones(searchText, dataLimit);
+};
 
 // Search btn click function
 document.getElementById("search-btn").addEventListener("click", function () {
   // start loader
- searchProcess(10);
+  searchProcess(10);
 });
+// Enter key event handeler search function
+document
+  .getElementById("search-field")
+  .addEventListener("keypress", function (e) {
+    // console.log(e.key);
+    if (e.key === "Enter") {
+      searchProcess(10);
+    }
+  });
+
 // loader function
 const toggleSpinner = (isLoading) => {
   const loaderSection = document.getElementById("spinner");
@@ -73,6 +83,13 @@ const toggleSpinner = (isLoading) => {
 };
 
 // show all button NB: this is not the best way
-document.getElementById('load-more').addEventListener('click', function () { 
-    searchProcess();
-})
+document.getElementById("load-more").addEventListener("click", function () {
+  searchProcess();
+});
+
+const loadPhoneDetails = async (id) => {
+  const url = `https://openapi.programming-hero.com/api/phones/${id}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  console.log(data.data);
+};
